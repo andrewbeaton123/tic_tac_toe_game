@@ -7,7 +7,7 @@ on: [push, pull_request]
 
 #gives the action write permission so that it can push the badge results
 permissions:
-contents: write
+  contents: write
 
 
 jobs:
