@@ -21,7 +21,8 @@
 To install the package, you can use `pip`:
 
 ```bash
-pip install tic_tac_toe_game
+pip install pip install git+https://github.com/andrewbeaton123/tic_tac_toe_game.git
+
 ```
 
 ##  Usage 
