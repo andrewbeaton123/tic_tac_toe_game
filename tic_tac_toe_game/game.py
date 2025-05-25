@@ -28,8 +28,7 @@ class TicTacToe:
         This method initializes the game board to a 3x3 matrix of zeros, representing an empty board,
         and sets the current player to 1, indicating that player 1 will make the next move.
         """
-        self.board = np.zeros((3, 3))
-        self.current_player = 1
+        self.__init__(self.current_player)
 
     def get_valid_moves(self):
         """
