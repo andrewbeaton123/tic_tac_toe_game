@@ -13,8 +13,8 @@ class TestTicTacToe(unittest.TestCase):
         # Check if the board is reset to a 3x3 matrix of zeros
         np.testing.assert_array_equal(game.board, np.zeros((3, 3)))
         
-        # Check if the current player is set to 1
-        self.assertEqual(game.current_player, 1)
+        # Check if the current player is set to the same as the starting player
+        self.assertEqual(game.current_player, 2)
 
     def test_get_valid_moves(self):
         #Create game with custom board
