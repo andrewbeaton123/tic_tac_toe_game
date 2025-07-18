@@ -12,3 +12,7 @@ authors = [{name = "Andrew Beaton"}]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
+
+
+[tool.setuptools]
+packages = ["tic_tac_toe_game"]
