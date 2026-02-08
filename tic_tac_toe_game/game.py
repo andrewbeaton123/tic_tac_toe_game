@@ -1,108 +1,102 @@
 import numpy as np
 
 class TicTacToe:
-    def __init__(self,starting_player:int, board =None):
+    def __init__(self, starting_player: int = 1, board=None):
+        """
+        Initializes the TicTacToe game.
+
+        Args:
+            starting_player (int): The player who starts the game (1 or 2).
+            board (np.ndarray, optional): A 3x3 array to initialize the board state.
+        """
+        self.starting_player = starting_player
+        self.current_player = starting_player
+        self.winner = None  # None: ongoing, 0: draw, 1 or 2: winner
         
-        self.current_player = starting_player # Player 1 starts
-        self.winner =0 # currently a draw 
         if board is None:
-            self.board = np.zeros((3, 3))  # 3x3 Tic Tac Toe board
-        else :
-            self.board = board
+            self.board = np.zeros((3, 3), dtype=int)
+        else:
+            self.board = np.array(board, dtype=int)
             
     def __str__(self):
         """
         Returns a string representation of the TicTacToe game.
-
-        The string includes the current player, the winner, and the current state of the board.
-
-        Returns:
-            str: A formatted string representing the current state of the game.
         """
         return f"TicTacToe(current_player={self.current_player}, winner={self.winner}, board=\n{self.board})"
 
     def reset(self):
         """
-        Resets the game board to its initial state and sets the current player to player 1.
-
-        This method initializes the game board to a 3x3 matrix of zeros, representing an empty board,
-        and sets the current player to 1, indicating that player 1 will make the next move.
+        Resets the game to its initial state using the original starting player.
         """
-        self.__init__(self.current_player)
+        self.current_player = self.starting_player
+        self.winner = None
+        self.board = np.zeros((3, 3), dtype=int)
 
     def get_valid_moves(self):
         """
         Get a list of valid moves on the current game board.
 
         Returns:
-            numpy.ndarray: An array of coordinates where the board is empty (value is 0).
+            list: A list of (row, col) tuples where the board is empty.
         """
-        return np.argwhere(self.board == 0)
+        return [tuple(move) for move in np.argwhere(self.board == 0)]
 
     def make_move(self, row, col):
         """
         Makes a move on the Tic-Tac-Toe board.
 
         Args:
-            row (int): The row index where the move is to be made (0-indexed).
-            col (int): The column index where the move is to be made (0-indexed).
+            row (int): The row index (0-indexed).
+            col (int): The column index (0-indexed).
 
         Raises:
-            ValueError: If the move is invalid (i.e., the cell is already occupied).
-
-        Side Effects:
-            Updates the board with the current player's move.
-            Checks for a winner after the move.
-            Switches the current player.
+            ValueError: If the move is invalid or the game is already over.
         """
-        if self.board[row, col] == 0:
-            self.board[row, col] = self.current_player
-            self.check_winner()
-            self.current_player = 3 - self.current_player  # Switch players (1 -> 2, 2 -> 1)
-        else:
-            raise ValueError("Invalid move")
+        if self.winner is not None:
+            raise ValueError("Game is already over")
+        if self.board[row, col] != 0:
+            raise ValueError("Invalid move: Cell already occupied")
+            
+        self.board[row, col] = self.current_player
+        self.check_winner()
+        
+        if self.winner is None:
+            self.current_player = 3 - self.current_player
+        return self.winner
 
     def check_winner(self):
         """
-        Checks the current state of the board to determine if there is a winner.
+        Checks the current state of the board to determine if there is a winner or draw.
 
         Returns:
-            int: The player number (1 or 2) if there is a winner.
-            0: If the game is a draw (no valid moves left).
-            None: If the game is still ongoing and there is no winner yet.
+            int or None: 1 or 2 for a winner, 0 for a draw, None if ongoing.
         """
         for player in [1, 2]:
-            # Check rows, columns, and diagonals for a win
             if np.any(np.all(self.board == player, axis=0)) or \
                np.any(np.all(self.board == player, axis=1)) or \
                np.all(np.diag(self.board) == player) or \
                np.all(np.diag(np.fliplr(self.board)) == player):
                 self.winner = player
                 return player
+        
         if len(self.get_valid_moves()) == 0:
-            return 0  # Draw
-        return None  # Game is ongoing
+            self.winner = 0  # Draw
+            return 0
+            
+        return None
 
     def is_game_over(self):
         """
         Check if the game is over.
 
         Returns:
-            bool: True if there is a winner, False otherwise.
+            bool: True if there is a winner or a draw, False otherwise.
         """
         return self.check_winner() is not None
 
     def print_board(self):
         """
-        Prints the current state of the tic-tac-toe board.
-
-        The board is represented as a 2D list where:
-        - 1 represents a cell occupied by player 'X'
-        - 2 represents a cell occupied by player 'O'
-        - 0 represents an empty cell
-
-        The board is printed with 'X' for player 1, 'O' for player 2, and spaces for empty cells.
-        Each row of the board is separated by a line of dashes.
+        Prints the current state of the board.
         """
         for row in self.board:
             print(" | ".join(["X" if cell == 1 else "O" if cell == 2 else " " for cell in row]))
@@ -110,17 +104,19 @@ class TicTacToe:
 
     def step(self, action):
         """
-        Executes a move in the game if the game is not over and the action is valid.
-
-        Parameters:
-        action (tuple): A tuple containing the row and column indices for the move.
-
-        Returns:
-        int: The winner of the game if the game is over and there is a winner (1 for player 1).
+        Executes a move and returns the new state, winner, and done flag.
+        
+        Args:
+            action: Either a (row, col) tuple or an integer index into valid moves.
         """
-        if not self.is_game_over() and action in self.get_valid_moves():
+        if isinstance(action, (int, np.integer)):
+            moves = self.get_valid_moves()
+            if action < len(moves):
+                row, col = moves[action]
+            else:
+                raise ValueError("Action index out of range")
+        else:
             row, col = action
-            self.make_move(row, col)
-            if self.is_game_over():
-                if self.winner == 1:
-                    return self.winner
+            
+        self.make_move(row, col)
+        return self.board, self.winner, self.is_game_over()
