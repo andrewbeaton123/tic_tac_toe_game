@@ -22,7 +22,9 @@ class TicTacToe:
         """
         Returns a string representation of the TicTacToe game.
         """
-        return f"TicTacToe(current_player={self.current_player}, winner={self.winner}, board=\n{self.board})"
+        return f"""TicTacToe(current_player={self.current_player}, 
+                    winner={self.winner}, 
+                    board=\n{self.board})"""
 
     def reset(self):
         """
@@ -99,7 +101,8 @@ class TicTacToe:
         Prints the current state of the board.
         """
         for row in self.board:
-            print(" | ".join(["X" if cell == 1 else "O" if cell == 2 else " " for cell in row]))
+            print(" | ".join(["X" if cell == 1 else "O" if cell == 2 
+                                                        else " " for cell in row]))
             print("-" * 9)
 
     def step(self, action):
